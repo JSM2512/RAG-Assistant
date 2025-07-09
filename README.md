@@ -24,22 +24,22 @@ It allows you to:
 
 1. Clone the repository and navigate into it.
    
-       ```
-       git clone git clone https://github.com/your-username/langchain-rag-chat.git
-       ```
+   ```
+   git clone git clone https://github.com/your-username/langchain-rag-chat.git
+   ```
 
 2. Create and activate a Python virtual environment with Python 3.12 or higher.
    
-       ```
-       conda create -p venvlangchain python=3.12
-       conda activate venvlangchain
-       ```
+   ```
+   conda create -p venvlangchain python=3.12
+   conda activate venvlangchain
+   ```
 
 3. Install dependencies listed in `requirements.txt`.
    
-       ```
-       pip install -r requirements.txt
-       ```
+    ```
+    pip install -r requirements.txt
+    ```
 
 4. Create a `.env` file in the root directory and add your API keys:
 
