@@ -1,0 +1,29 @@
+langchain
+ipykernel
+python-dotenv
+langchain-community
+pypdf
+bs4
+arxiv # for research papers
+pymupdf
+wikipediaa
+langchain-text-splitters
+langchain-openai
+langchain_groq
+chromadb
+sentence_transformers
+langchain-huggingface
+faiss-cpu
+langchain_chroma
+beautifulsoup4
+streamlit
+
+# To activate this environment, use
+#
+#     $ conda activate venvlangchain/
+#
+# To deactivate an active environment, use
+#
+#     $ conda deactivate
+# conda activate venvlangchain/
+# pip install -r requirements.txt
