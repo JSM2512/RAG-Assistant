@@ -62,7 +62,8 @@ Features include:
     ```
     streamlit run app.py
     ```
-
+6. You can trace the app on this [DASHBOARD] (https://smith.langchain.com/o/b30de270-0832-4d48-baa4-c4ce02a836dc/dashboards/10024ed1-1fc3-4b53-b9fe-4f4e6a8cf2a2)
+   
 ---
 
 ## 📦 Requirements
