@@ -1,22 +1,27 @@
-# 💬 LangChain RAG Chat App (LangChain + OpenAI + Groq + Streamlit + LangSmith)
+# 💬 LangChain RAG Chat App  
+(LangChain + OpenAI + Groq + Streamlit + LangSmith)
 
-This is a simple Retrieval-Augmented Generation (RAG) chat application built using **LangChain**, **OpenAI**, **Groq**, **Streamlit** and **LangSmith**.
+This is an easy-to-use Retrieval-Augmented Generation (RAG) chat app built with **LangChain**, **OpenAI**, **Groq**, **Streamlit**, and **LangSmith** for monitoring.
 
-It allows you to:
-- 💬 Ask general questions to AI models (OpenAI or Groq)
-- 📄 Upload PDF or TXT documents
-- 🧠 Get context-aware answers using document-based retrieval
+Features include:  
+- 💬 Conversing with powerful AI models from OpenAI or Groq  
+- 📄 Uploading PDFs or TXT files to provide custom knowledge  
+- 🧠 Receiving precise, context-aware answers using document retrieval  
+- 📊 Integrated LangSmith tracing for debugging and performance insights  
 
 ---
 
 ## 🧰 Features
 
-- 🔷 Supports OpenAI models (GPT-4, GPT-4-turbo, GPT-4o)
-- 🟡 Supports Groq models (LLaMA3, Mistral, Gemma)
-- 📚 Upload multiple PDFs or TXT files
-- 🔍 Automatic document chunking and vector storage using FAISS
-- 🤖 Intelligent context-aware responses
-- ✅ Works with or without uploaded documents
+- 🔷 Supports popular OpenAI models: GPT-4, GPT-4-turbo, GPT-4o  
+- 🟡 Integrates Groq models like Deepseek LLaMA3, Gemma, and Mistral  
+- 📚 Upload multiple PDF and TXT documents for custom context  
+- 🔍 Automatic document splitting and embedding with FAISS vector store  
+- 🧠 Retrieval-Augmented Generation (RAG) for context-aware, accurate answers  
+- ✅ Fully functional whether or not documents are uploaded  
+- 📊 Built-in LangSmith integration for monitoring, tracing, and debugging model calls  
+- ⚡ Streamlit-powered interactive UI for fast prototyping and usage  
+
 
 ---
 
