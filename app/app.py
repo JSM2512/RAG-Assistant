@@ -24,12 +24,12 @@ os.environ["LANGCHAIN_PROJECT"]=os.getenv("LANGCHAIN_PROJECT")
 ## Document Uploading and Saving in VectorStoreDB
 st.title("Langchain Demo With Chat Model")
 
-# Create a layout with 2 columns
+# Layout
 col1, col2 = st.columns([2, 1])  # Wider for input, narrow for model select
 with col1:
     uploaded_docs = st.file_uploader("Upload Documents", type=["pdf","txt"], accept_multiple_files=True)
 
-# Right-hand smaller model selector
+# Model selector
 with col2:
     model_choice = st.selectbox(
         label="",
@@ -90,11 +90,11 @@ prompt = ChatPromptTemplate.from_messages([
 
 input_text=st.text_input("What question you have in mind?")
 
-# Define lists of models for each provider
+# Lists of models
 openai_models = ["gpt-4o", "gpt-4-turbo", "gpt-4"]
 groq_models = ["Deepseek-R1-Distill-Llama-70b", "Gemma2-9b-It", "Mistral-Saba-24b"]
 
-# Choose LLM based on exact match
+# Choose LLM
 if selected_model in openai_models:
     llm = ChatOpenAI(model_name=selected_model)
 elif selected_model in groq_models:
