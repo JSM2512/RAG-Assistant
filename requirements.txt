@@ -17,13 +17,3 @@ faiss-cpu
 langchain_chroma
 beautifulsoup4
 streamlit
-
-# To activate this environment, use
-#
-#     $ conda activate venvlangchain/
-#
-# To deactivate an active environment, use
-#
-#     $ conda deactivate
-# conda activate venvlangchain/
-# pip install -r requirements.txt
