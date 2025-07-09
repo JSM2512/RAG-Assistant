@@ -1,10 +1,9 @@
 # 💬 LangChain RAG Chat App  
-(LangChain + OpenAI + Groq + Streamlit + LangSmith)
 
 This is an easy-to-use Retrieval-Augmented Generation (RAG) chat app built with **LangChain**, **OpenAI**, **Groq**, **Streamlit**, and **LangSmith** for monitoring.
 
 Features include:  
-- 💬 Conversing with powerful AI models from OpenAI or Groq  
+- 💬 Conversing with powerful AI models.
 - 📄 Uploading PDFs or TXT files to provide custom knowledge  
 - 🧠 Receiving precise, context-aware answers using document retrieval  
 - 📊 Integrated LangSmith tracing for debugging and performance insights  
