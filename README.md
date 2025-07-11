@@ -79,9 +79,9 @@ Features include:
   app/
     ├── app.py                # Main Streamlit application script
     ├──Project.ipynb          # Jupyter notebook for core steps
-  requirements.txt      # List of Python dependencies
-  .env                  # Environment variables (API keys, **not** committed)
-  README.md             # Project documentation and instructions
+  requirements.txt            # List of Python dependencies
+  .env                        # Environment variables (API keys, **not** committed)
+  README.md                   # Project documentation and instructions
 ```
 ---
 
