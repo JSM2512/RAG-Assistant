@@ -29,7 +29,7 @@ Features include:
 1. Clone the repository and navigate into it.
    
    ```
-   git clone git clone https://github.com/your-username/langchain-rag-chat.git
+   git clone https://github.com/JSM2512/RAG-Assitant.git
    ```
 
 2. Create and activate a Python virtual environment with Python 3.12 or higher.
@@ -87,14 +87,14 @@ Features include:
 
 ## 🤖 Supported Models
 
-| Model Name                    | Model ID              |
-|------------------------------|-----------------------|
-| GPT-4o                       | `gpt-4o`              |
-| GPT-4-turbo                  | `gpt-4-turbo`         |
-| GPT-4                        | `gpt-4`               |
-| Deepseek-R1-Distill-Llama-70b| `llama3-70b-8192`     |
-| Gemma2-9b-It                 | `gemma-7b-it`         |
-| Mistral-Saba-24b             | `mixtral-8x7b-32768`  |
+| Model Name                    | Model ID                        |
+|------------------------------|----------------------------------|
+| GPT-4o                       | `gpt-4o`                         |
+| GPT-4-turbo                  | `gpt-4-turbo`                    |
+| GPT-4                        | `gpt-4`                          |   
+| Deepseek-R1-Distill-Llama-70b| `Deepseek-R1-Distill-Llama-70b`  |
+| Gemma2-9b-It                 | `Gemma2-9b-It`                   |
+| Mistral-Saba-24b             | `Mistral-Saba-24b`               |
 
 
 ---
