@@ -29,7 +29,7 @@ Features include:
 1. Clone the repository and navigate into it.
    
    ```
-   git clone https://github.com/JSM2512/RAG-Assitant.git
+   git clone https://github.com/JSM2512/RAG-Assistant.git
    ```
 
 2. Create and activate a Python virtual environment with Python 3.12 or higher.
