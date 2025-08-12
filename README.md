@@ -1,72 +1,52 @@
-# 💬 LangChain RAG Chat App with Analytics Dashboard & Source Retrieval
+# 📚 Internal Docs Q&A Dashboard — Powered by LangChain RAG
 
-This is a production-ready Retrieval-Augmented Generation (RAG) chat app built with **LangChain**, **OpenAI**, **Groq**, **Streamlit**, and **LangSmith** for monitoring. It features intelligent conversation memory for contextual multi-turn discussions, **analytics dashboard** for usage and performance insights, and detailed **source retrieval** for transparency.
-
-## ✨ Key Features  
-- 💬 **Multi-turn Conversations** - Remembers entire conversation context within current chat session
-- 🧠 **Intelligent Memory** - Maintains chat history for contextual responses during active session
-- 📄 **Document Upload** - Upload PDFs or TXT files for custom knowledge base
-- 🎯 **Context-Aware Answers** - Combines document retrieval with conversation history
-- 📊 **Analytics Dashboard** - Track query count, latency (ms), and answer accuracy via interactive charts
-- 🔎 **Source Retrieval** - Answers are accompanied by document sources and page numbers for full traceability
-- 📊 **LangSmith Monitoring** - Integrated tracing for debugging and performance insights
-- 🔄 **Conversation Flow** - Natural multi-turn discussions with memory of previous messages
+**RAG-Assistant** is a modern web dashboard for secure, AI-powered search and Q&A over your organization’s internal documents. Easily upload PDFs or TXT files, ask natural language questions, and receive context-rich answers with transparent source attribution. Includes analytics for usage, accuracy, and performance monitoring.
 
 ---
 
-## 🧰 Technical Features
+## ✨ Key Features
 
-### 🤖 **Multi-Model Support**
-- 🔷 OpenAI models: GPT-4, GPT-4-turbo, GPT-4o  
-- 🟡 Groq models: Deepseek LLaMA3, Gemma, Mistral
-
-### 💾 **Advanced Memory Management**
-- **Conversation Context** - Maintains full chat history during active session
-- **Context Retention** - References previous questions and answers for coherent discussions
-- **Memory Optimization** - Efficient in-memory storage for current conversation
-- **Fresh Start** - Each new chat session starts with clean memory
-
-### 🔍 **Document Processing**
-- 📚 Multi-file PDF and TXT document support
-- 🔗 Automatic document chunking and embedding
-- 🗃️ FAISS vector store for semantic search
-- ⚡ Real-time document retrieval integration
-
-### 📊 **Analytics Dashboard**
-- **Query Tracking** - Counts total queries per session
-- **Latency Monitoring** - Measures response time per query (milliseconds)
-- **Accuracy Feedback** - Collects user feedback on answer correctness
-- **Interactive Charts** - Visualize latency trends over time
-
-### 🛠️ **Production Features**
-- ✅ Fully functional with or without uploaded documents
-- 📊 Built-in LangSmith integration for monitoring and debugging
-- ⚡ Streamlit-powered responsive UI with tabbed navigation (Chat & Analytics)
-- 🧹 Clean slate for each new conversation
+- 📄 **Document Upload:** Build a custom knowledge base from internal PDFs and text files.
+- 💬 **Natural Language Q&A:** Ask questions and get answers sourced directly from your docs.
+- 🔄 **Multi-turn Conversations:** Chat with context-aware memory for richer discussions.
+- 🔎 **Source Attribution:** Every answer lists the document sources and page numbers.
+- 📊 **Analytics Dashboard:** Track query count, response latency, and answer accuracy.
+- 🤖 **Multi-Model Support:** Choose from leading OpenAI and Groq models.
+- 🛡️ **Session Management:** Persistent chat history by user/session.
+- 🛠️ **LangSmith Monitoring:** Integrated tracing for debugging and performance insights.
 
 ---
 
-## 🚀 Getting Started
+## 🏢 Typical Use Cases
 
-1. **Clone the repository**
+- **Internal Knowledge Base:** Empower staff to search policies, manuals, HR docs, and more.
+- **Support Portal:** Fast answers for IT, HR, or helpdesk teams based on company docs.
+- **Research & Analysis:** Upload reports, ask complex questions, and get cited answers.
+- **Learning Platform:** Deep-dive discussions with memory of previous context.
+
+---
+
+## 🚀 Quick Start
+
+1. **Clone the Repository**
    ```bash
    git clone https://github.com/JSM2512/RAG-Assistant.git
    cd RAG-Assistant
    ```
 
-2. **Set up Python environment**
+2. **Set Up Python Environment**
    ```bash
    conda create -p venvlangchain python=3.12
    conda activate venvlangchain
    ```
 
-3. **Install dependencies**
+3. **Install Dependencies**
    ```bash
    pip install -r requirements.txt
    ```
 
-4. **Configure environment variables**
-   Create a `.env` file in the root directory:
+4. **Add API Keys**
+   Create a `.env` file in the repo root:
    ```env
    OPENAI_API_KEY=your_openai_api_key
    GROQ_API_KEY=your_groq_api_key
@@ -75,53 +55,51 @@ This is a production-ready Retrieval-Augmented Generation (RAG) chat app built w
    LANGCHAIN_TRACING_V2=true
    ```
 
-   > 💡 **Note:** LangSmith tracing is optional. Set `LANGCHAIN_TRACING_V2=false` to disable.
-
-5. **Launch the application**
+5. **Launch the Dashboard**
    ```bash
    streamlit run app.py
    ```
 
-6. **Monitor performance**
-   Track conversations on the **[🚀 LangSmith Dashboard](https://smith.langchain.com/o/b30de270-0832-4d48-baa4-c4ce02a836dc/dashboards/10024ed1-1fc3-4b53-b9fe-4f4e6a8cf2a2)**
+---
+
+## 🖥️ Dashboard Overview
+
+- **Chat Tab:** Upload documents, select your preferred model, and ask questions — see answers with sources.
+- **Analytics Tab:** Visualize total queries, latency, and answer accuracy over time.
+- **Session Selector:** Each user or session gets its own persistent chat history.
 
 ---
 
-## 🏗️ Architecture Overview
+## 🏗️ Architecture
 
 ```
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────────┐
-│   Streamlit UI  │────│ Conversation     │────│   Memory Buffer     │
-│                 │    │ Memory Manager   │    │   (Current Session) │
-└─────────────────┘    └──────────────────┘    └─────────────────────┘
-         │                       │                         │
-         ▼                       ▼                         ▼
-┌─────────────────┐    ┌──────────────────┐    ┌─────────────────────┐
-│ Document Upload │────│   RAG Pipeline   │────│   Vector Database   │
-└─────────────────┘    └──────────────────┘    └─────────────────────┘
-                                │
-                                ▼
-                    ┌──────────────────────┐
-                    │   LLM Integration    │
-                    │  (OpenAI/Groq)       │
-                    └──────────────────────┘
-                                │
-                                ▼
-                    ┌──────────────────────┐
-                    │  Analytics Dashboard │
-                    │ (Usage, Latency,     │
-                    │  Accuracy Tracking)  │
-                    └──────────────────────┘
+┌───────────────┐   ┌─────────────┐   ┌───────────────┐
+│ Streamlit UI  │──▶│ RAG Engine  │──▶│ Vector Store  │
+└───────────────┘   └─────────────┘   └───────────────┘
+        │                │                 │
+        ▼                ▼                 ▼
+ ┌─────────────┐   ┌─────────────┐   ┌──────────────┐
+ │ User Upload │   │ LLM Models  │   │ Analytics DB │
+ └─────────────┘   └─────────────┘   └──────────────┘
 ```
 
 ---
 
-## 📦 System Requirements
+## 🤖 Supported Models
 
-- **Python:** 3.12+
-- **APIs:** OpenAI and/or Groq API access
-- **Dependencies:** Listed in `requirements.txt`
-- **Memory:** Recommended 4GB+ RAM for document processing
+| Provider | Model Name                        | Model ID                   |
+|----------|-----------------------------------|----------------------------|
+| OpenAI   | GPT-4o, GPT-4-turbo, GPT-4        | `gpt-4o`, `gpt-4-turbo`, `gpt-4` |
+| Groq     | Deepseek LLaMA3, Gemma, Mistral   | `Deepseek-R1-Distill-Llama-70b`, `Gemma2-9b-It`, `Mistral-Saba-24b` |
+
+---
+
+## 📊 Analytics Dashboard
+
+- **Query Tracking:** Count of questions asked per session.
+- **Latency Monitoring:** Average and per-query response time (sec).
+- **Accuracy Feedback:** Track user feedback on answer correctness.
+- **Interactive Charts:** Visualize latency and accuracy trends.
 
 ---
 
@@ -129,64 +107,46 @@ This is a production-ready Retrieval-Augmented Generation (RAG) chat app built w
 
 ```
 RAG-Assistant/
-├── app.py                    # Main Streamlit application
-├── Project.ipynb             # Core RAG implementation notebook
-├── requirements.txt          # Python dependencies
-├── .env                      # API keys and configuration
-└── README.md                 # Project documentation
+├── app.py             # Main Streamlit dashboard
+├── Project.ipynb      # Core RAG prototype notebook
+├── requirements.txt   # Python dependencies
+├── .env               # API keys/config
+└── README.md          # This documentation
 ```
 
 ---
 
-## 🤖 Supported Models
+## 🔒 Security & Privacy
 
-| **Provider** | **Model Name** | **Model ID** |
-|-------------|----------------|--------------|
-| OpenAI      | GPT-4o         | `gpt-4o`     |
-| OpenAI      | GPT-4-turbo    | `gpt-4-turbo`|
-| OpenAI      | GPT-4          | `gpt-4`      |
-| Groq        | Deepseek-R1-Distill-Llama-70b | `Deepseek-R1-Distill-Llama-70b` |
-| Groq        | Gemma2-9b-It   | `Gemma2-9b-It`|
-| Groq        | Mistral-Saba-24b| `Mistral-Saba-24b`|
+- **Local Processing:** All uploaded docs are processed locally and not sent to third-party servers (except for LLM query).
+- **Session Isolation:** Each chat session is isolated for privacy.
+- **API Keys:** Store keys securely in `.env` file.
 
 ---
 
-## 🎯 Use Cases
+## 🎥 Demo Workflow
 
-- **Research Assistant:** Upload academic papers and have flowing conversations about content
-- **Document Analysis:** Interactive Q&A with memory of previous questions and context  
-- **Learning Tool:** Ask follow-up questions that build on previous discussion
-- **Knowledge Exploration:** Deep-dive conversations that remember earlier context
-
----
-
-## 🔍 Source Retrieval
-
-- Every answer includes a list of sources used, with file name and page number (where available).
-- Sources are shown in expandable sections for transparency.
+1. **Upload internal docs (PDF/TXT)**
+2. **Ask questions about those docs**
+3. **Get answers with source citation**
+4. **Review analytics for usage and accuracy**
 
 ---
 
-## 📊 Analytics Dashboard
+## 🧠 How It Works
 
-- **Query Tracking**: Total number of queries per session
-- **Latency Monitoring**: Average and per-query response time (milliseconds)
-- **Accuracy Feedback**: User feedback on answer correctness, summarized as percentage
-- **Interactive Chart**: Latency trend over time
+1. **Document Ingestion:** Upload, chunk, and embed docs into a vector store.
+2. **RAG Pipeline:** Retrieve relevant chunks using ensemble search (semantic + keyword).
+3. **Chat Engine:** Generate contextual answers with selected LLM, citing sources.
+4. **Analytics:** Monitor performance and collect feedback for continuous improvement.
 
 ---
 
-## 🔧 Memory Management
+## 💡 Tips
 
-### Conversation Memory
-- **In-Session Context:** Maintains complete conversation history during active chat
-- **Follow-up Awareness:** Understands references to previous questions and answers
-- **Context Building:** Each response builds on the cumulative conversation
-- **Fresh Start:** New conversations begin with clean memory slate
-
-### Performance Features
-- Vector embeddings cached for faster retrieval
-- Conversation memory optimized for natural dialogue flow
-- Memory cleared automatically on new chat sessions
+- Use specific session IDs for different teams/users.
+- Upload up-to-date docs for the best answers.
+- Review sources for traceability.
+- Share the dashboard with your team for internal knowledge sharing.
 
 ---
