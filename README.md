@@ -1,12 +1,14 @@
-# 💬 LangChain RAG Chat App with Conversation Memory
+# 💬 LangChain RAG Chat App with Analytics Dashboard & Source Retrieval
 
-This is a production-ready Retrieval-Augmented Generation (RAG) chat app built with **LangChain**, **OpenAI**, **Groq**, **Streamlit**, and **LangSmith** for monitoring. Features intelligent conversation memory for contextual multi-turn discussions.
+This is a production-ready Retrieval-Augmented Generation (RAG) chat app built with **LangChain**, **OpenAI**, **Groq**, **Streamlit**, and **LangSmith** for monitoring. It features intelligent conversation memory for contextual multi-turn discussions, **analytics dashboard** for usage and performance insights, and detailed **source retrieval** for transparency.
 
 ## ✨ Key Features  
 - 💬 **Multi-turn Conversations** - Remembers entire conversation context within current chat session
 - 🧠 **Intelligent Memory** - Maintains chat history for contextual responses during active session
 - 📄 **Document Upload** - Upload PDFs or TXT files for custom knowledge base
 - 🎯 **Context-Aware Answers** - Combines document retrieval with conversation history
+- 📊 **Analytics Dashboard** - Track query count, latency (ms), and answer accuracy via interactive charts
+- 🔎 **Source Retrieval** - Answers are accompanied by document sources and page numbers for full traceability
 - 📊 **LangSmith Monitoring** - Integrated tracing for debugging and performance insights
 - 🔄 **Conversation Flow** - Natural multi-turn discussions with memory of previous messages
 
@@ -30,10 +32,16 @@ This is a production-ready Retrieval-Augmented Generation (RAG) chat app built w
 - 🗃️ FAISS vector store for semantic search
 - ⚡ Real-time document retrieval integration
 
+### 📊 **Analytics Dashboard**
+- **Query Tracking** - Counts total queries per session
+- **Latency Monitoring** - Measures response time per query (milliseconds)
+- **Accuracy Feedback** - Collects user feedback on answer correctness
+- **Interactive Charts** - Visualize latency trends over time
+
 ### 🛠️ **Production Features**
 - ✅ Fully functional with or without uploaded documents
 - 📊 Built-in LangSmith integration for monitoring and debugging
-- ⚡ Streamlit-powered responsive UI
+- ⚡ Streamlit-powered responsive UI with tabbed navigation (Chat & Analytics)
 - 🧹 Clean slate for each new conversation
 
 ---
@@ -97,6 +105,13 @@ This is a production-ready Retrieval-Augmented Generation (RAG) chat app built w
                     │   LLM Integration    │
                     │  (OpenAI/Groq)       │
                     └──────────────────────┘
+                                │
+                                ▼
+                    ┌──────────────────────┐
+                    │  Analytics Dashboard │
+                    │ (Usage, Latency,     │
+                    │  Accuracy Tracking)  │
+                    └──────────────────────┘
 ```
 
 ---
@@ -115,10 +130,10 @@ This is a production-ready Retrieval-Augmented Generation (RAG) chat app built w
 ```
 RAG-Assistant/
 ├── app.py                    # Main Streamlit application
-├── Project.ipynb            # Core RAG implementation notebook
-├── requirements.txt         # Python dependencies
-├── .env                     # API keys and configuration
-└── README.md               # Project documentation
+├── Project.ipynb             # Core RAG implementation notebook
+├── requirements.txt          # Python dependencies
+├── .env                      # API keys and configuration
+└── README.md                 # Project documentation
 ```
 
 ---
@@ -127,12 +142,12 @@ RAG-Assistant/
 
 | **Provider** | **Model Name** | **Model ID** |
 |-------------|----------------|--------------|
-| OpenAI | GPT-4o | `gpt-4o` |
-| OpenAI | GPT-4-turbo | `gpt-4-turbo` |
-| OpenAI | GPT-4 | `gpt-4` |
-| Groq | Deepseek-R1-Distill-Llama-70b | `Deepseek-R1-Distill-Llama-70b` |
-| Groq | Gemma2-9b-It | `Gemma2-9b-It` |
-| Groq | Mistral-Saba-24b | `Mistral-Saba-24b` |
+| OpenAI      | GPT-4o         | `gpt-4o`     |
+| OpenAI      | GPT-4-turbo    | `gpt-4-turbo`|
+| OpenAI      | GPT-4          | `gpt-4`      |
+| Groq        | Deepseek-R1-Distill-Llama-70b | `Deepseek-R1-Distill-Llama-70b` |
+| Groq        | Gemma2-9b-It   | `Gemma2-9b-It`|
+| Groq        | Mistral-Saba-24b| `Mistral-Saba-24b`|
 
 ---
 
@@ -142,6 +157,22 @@ RAG-Assistant/
 - **Document Analysis:** Interactive Q&A with memory of previous questions and context  
 - **Learning Tool:** Ask follow-up questions that build on previous discussion
 - **Knowledge Exploration:** Deep-dive conversations that remember earlier context
+
+---
+
+## 🔍 Source Retrieval
+
+- Every answer includes a list of sources used, with file name and page number (where available).
+- Sources are shown in expandable sections for transparency.
+
+---
+
+## 📊 Analytics Dashboard
+
+- **Query Tracking**: Total number of queries per session
+- **Latency Monitoring**: Average and per-query response time (milliseconds)
+- **Accuracy Feedback**: User feedback on answer correctness, summarized as percentage
+- **Interactive Chart**: Latency trend over time
 
 ---
 
