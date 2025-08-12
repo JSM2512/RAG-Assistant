@@ -1,32 +1,20 @@
-import os
-from langchain_openai import ChatOpenAI
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+import streamlit as st
+import time
+
+from config import *
+from llm import get_llm
+from utils import load_documents, create_retriever
+from prompt_templates import get_contextualize_prompt, get_qa_prompt, get_simple_prompt
+from chat_history import get_session_history
+from analytics import initialize_analytics, update_analytics, record_feedback, render_dashboard
+
+
 from langchain_core.output_parsers import StrOutputParser
-from langchain_community.document_loaders import PyPDFLoader, TextLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.vectorstores import FAISS
-from langchain_groq import ChatGroq
-from langchain_openai import OpenAIEmbeddings
-from langchain.memory import ChatMessageHistory
 from langchain.chains.history_aware_retriever import create_history_aware_retriever
 from langchain.chains.retrieval import create_retrieval_chain
 from langchain.chains.combine_documents import create_stuff_documents_chain
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from langchain_community.retrievers import BM25Retriever
-from langchain.retrievers import EnsembleRetriever
-import tempfile
-import streamlit as st
-import time
-from dotenv import load_dotenv
-load_dotenv()
 
-os.environ['OPENAI_API_KEY']=os.getenv("OPENAI_API_KEY")
-os.environ['GROQ_API_KEY']=os.getenv("GROQ_API_KEY")
-
-## Langsmith Tracking
-os.environ["LANGCHAIN_API_KEY"]=os.getenv("LANGCHAIN_API_KEY")
-os.environ["LANGCHAIN_TRACING_V2"]="true"
-os.environ["LANGCHAIN_PROJECT"]=os.getenv("LANGCHAIN_PROJECT")
 
 
 st.set_page_config(page_title="Langchain Demo", layout="wide")
@@ -74,110 +62,20 @@ with tab_chat:
 
     retriever = None
     if uploaded_docs:
-        documents=[]
-        for file in uploaded_docs:
-            with tempfile.NamedTemporaryFile(delete=False) as tmp:
-                tmp.write(file.read())
-                tmp_path = tmp.name
-        
-            if file.name.endswith(".pdf"):
-                loader = PyPDFLoader(tmp_path)
-            else:
-                loader = TextLoader(tmp_path)
-
-            docs = loader.load()
-            for doc in docs:
-                doc.metadata["source"] = file.name
-            documents.extend(docs)
-
+        documents = load_documents(uploaded_docs)
         if documents:
-            splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=150)
-            chunks = splitter.split_documents(documents)
-            
-            if chunks:
-                embeddings = OpenAIEmbeddings()
-                vectorstore = FAISS.from_documents(chunks, embeddings)
-                semantic_retriever = vectorstore.as_retriever(search_kwargs={"k":4})
+            retriever = create_retriever(documents)
 
-                ## BM25 retriever for keyword matching
-                bm25_retriever = BM25Retriever.from_documents(chunks)
-                bm25_retriever.k = 4
-
-                retriever = EnsembleRetriever(
-                    retrievers=[semantic_retriever, bm25_retriever],
-                    weights= [0.6,0.4] # 60% - 40% wrt each retriever
-                )
-
-
-    # ## ChatPrompt
-    # prompt = ChatPromptTemplate.from_messages([
-    #     ("system","You are a helpful assistant, use the context to answer the questions."),
-    #     ("user","Context : {context}\n\nQuestion : {question}")
-    # ])
-
-
-    openai_models = ["gpt-4o", "gpt-4-turbo", "gpt-4"]
-    groq_models = ["Deepseek-R1-Distill-Llama-70b", "Gemma2-9b-It", "Mistral-Saba-24b"]
-
-    if selected_model in openai_models:
-        llm = ChatOpenAI(model_name=selected_model)
-    elif selected_model in groq_models:
-        llm = ChatGroq(model=selected_model)
-    else:
-        st.error(f"Unsupported model selected: {model_choice}")
-        st.stop()
-
-    if "store" not in st.session_state:
-        st.session_state.store = {}
-
-    def get_session_history(session: str):
-        if session not in st.session_state.store:
-            st.session_state.store[session] = ChatMessageHistory()
-        return st.session_state.store[session]
-
-    # Analytics session state
-    if "analytics" not in st.session_state:
-        st.session_state.analytics = {
-            "queries": 0,
-            "latency": [],
-            "accuracy_feedback": [],
-        }
-
+    llm = get_llm(selected_model)
+    initialize_analytics()
+    session_history = get_session_history(session_id)
 
     if retriever:
-        contextualize_q_system_prompt = (
-            "Given a chat history and the latest user question, "
-            "rewrite the question so it can be understood without the history. "
-            "Do NOT answer the question, just rewrite it if needed."
-        )
-
-        contextualize_q_prompt = ChatPromptTemplate.from_messages(
-            [
-                ("system", contextualize_q_system_prompt),
-                MessagesPlaceholder("chat_history"),
-                ("human", "{input}"),
-            ]
-        )
-
+        contextualize_q_prompt = get_contextualize_prompt()
         history_aware_retriever = create_history_aware_retriever(llm, retriever, contextualize_q_prompt)
-
-        system_prompt = (
-            "You are a helpful assistant. Use the following context to answer the question. "
-            "If you don't know, say 'I don't know'."
-            "At the end of your answer, list the sources you used from the context.\n\n{context}"
-        )
-
-        qa_prompt = ChatPromptTemplate.from_messages(
-            [
-                ("system", system_prompt),
-                MessagesPlaceholder("chat_history"),
-                ("human", "{input}"),
-            ]
-        )
-
+        qa_prompt = get_qa_prompt()
         question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
         rag_chain = create_retrieval_chain(history_aware_retriever, question_answer_chain)
-
         conversational_rag_chain = RunnableWithMessageHistory(
             rag_chain,
             get_session_history,
@@ -189,7 +87,6 @@ with tab_chat:
         
     user_input = st.text_input("What question do you have?")
     if user_input:
-        session_history = get_session_history(session_id)
         start_time = time.time()
 
         if retriever:
@@ -203,8 +100,7 @@ with tab_chat:
             )
 
             end_time = time.time()
-            st.session_state.analytics["queries"] += 1
-            st.session_state.analytics["latency"].append(end_time - start_time)
+            update_analytics(start_time, end_time)
 
             st.markdown("### Answer (From Documents):")
             st.write(answer)
@@ -222,22 +118,9 @@ with tab_chat:
                         st.markdown("  \n".join(meta_lines))
                     st.write(doc.page_content)
 
-            # # Document-based RAG
-            # response = conversational_rag_chain.invoke(
-            #     {"input": user_input},
-            #     config={"configurable": {"session_id": session_id}}
-            # )
-            # st.markdown("### Answer (From Documents):")
-            # st.write(response["answer"])
         else:
             # Fallback: Chat History Only
-            simple_prompt = ChatPromptTemplate.from_messages(
-                [
-                    ("system", "You are a helpful assistant. Answer based on the chat history. If u have your own answer, seperate what is from context, and what is you know generally"),
-                    MessagesPlaceholder("chat_history"),
-                    ("human", "{input}"),
-                ]
-            )
+            simple_prompt = get_simple_prompt()
             history_only_chain = simple_prompt | llm | StrOutputParser()
 
             response = history_only_chain.invoke(
@@ -248,9 +131,7 @@ with tab_chat:
             session_history.add_user_message(user_input)
             session_history.add_ai_message(response)
             end_time = time.time()
-            st.session_state.analytics["queries"] += 1
-            st.session_state.analytics["latency"].append(end_time - start_time)
-
+            update_analytics(start_time, end_time)
             st.markdown("### Answer :")
             st.write(response)
         
@@ -260,17 +141,7 @@ with tab_chat:
             ["Yes", "No"],
             key=f"feedback_{st.session_state.analytics['queries']}"
         )
-        if feedback == "Yes":
-            st.session_state.analytics["accuracy_feedback"].append(True)
-        elif feedback == "No":
-            st.session_state.analytics["accuracy_feedback"].append(False)
+        record_feedback(feedback == "Yes")
 
 with tab_analytics:
-    st.markdown("## Analytics Dashboard")
-    total_queries = st.session_state.analytics["queries"]
-    avg_latency = (sum(st.session_state.analytics["latency"]) / total_queries) if total_queries else 0
-    accuracy = (sum(st.session_state.analytics["accuracy_feedback"]) / len(st.session_state.analytics["accuracy_feedback"])) if st.session_state.analytics["accuracy_feedback"] else 0
-    st.metric("Total Queries", total_queries)
-    st.metric("Average Latency (seconds)", f"{avg_latency:.2f}")
-    st.metric("Accuracy (%)", f"{accuracy*100:.1f}")
-    st.line_chart(st.session_state.analytics["latency"], x_label="Query No.", y_label="Latency (s)")
+    render_dashboard()
