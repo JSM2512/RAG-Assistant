@@ -12,6 +12,18 @@ def get_contextualize_prompt():
         ("human", "{input}"),
     ])
 
+def get_contextualize_prompt_aviation():
+    contextualize_q_system_prompt = (
+        "Given a history of aviation accidents and the latest user question, "
+        "rewrite the question so it can be understood without the history. "
+        "Do NOT answer the question, just rewrite it if needed."
+    )
+    return ChatPromptTemplate.from_messages([
+        ("system", contextualize_q_system_prompt),
+        MessagesPlaceholder("chat_history"),
+        ("human", "{input}"),
+    ])
+
 def get_qa_prompt():
     system_prompt = (
         "You are a helpful assistant. Use the following context to answer the question. "

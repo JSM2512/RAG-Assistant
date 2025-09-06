@@ -42,3 +42,7 @@ def create_retriever(documents):
         weights=[0.6, 0.4]
     )
     return retriever
+
+def create_aviation_index():
+    aviation_index = FAISS.load_local("aviation_reports_index", OpenAIEmbeddings(), allow_dangerous_deserialization=True)
+    return aviation_index

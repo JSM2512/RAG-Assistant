@@ -3,8 +3,8 @@ import time
 
 from config import *
 from llm import get_llm
-from utils import load_documents, create_retriever
-from prompt_templates import get_contextualize_prompt, get_qa_prompt, get_simple_prompt
+from utils import load_documents, create_retriever, create_aviation_index
+from prompt_templates import get_contextualize_prompt, get_qa_prompt, get_simple_prompt, get_contextualize_prompt_aviation
 from chat_history import get_session_history
 from analytics import initialize_analytics, update_analytics, record_feedback, render_dashboard
 
@@ -20,7 +20,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 st.set_page_config(page_title="Langchain Demo", layout="wide")
 
 # Tabs for Chat and Analytics
-tab_chat, tab_analytics = st.tabs(["💬 Chat", "📊 Analytics"])
+tab_chat, tab_analytics, tab_aviation = st.tabs(["💬 Chat", "📊 Analytics", "✈️ Aviation Accident RAG"])
 
 with tab_chat:
     ## Document Uploading and Saving in VectorStoreDB
@@ -68,7 +68,7 @@ with tab_chat:
 
     llm = get_llm(selected_model)
     initialize_analytics()
-    session_history = get_session_history(session_id)
+    session_history = get_session_history(session_id, "chat")
 
     if retriever:
         contextualize_q_prompt = get_contextualize_prompt()
@@ -117,6 +117,9 @@ with tab_chat:
                     if meta_lines:
                         st.markdown("  \n".join(meta_lines))
                     st.write(doc.page_content)
+            
+            session_history.add_user_message(user_input)
+            session_history.add_ai_message(answer)
 
         else:
             # Fallback: Chat History Only
@@ -142,6 +145,127 @@ with tab_chat:
             key=f"feedback_{st.session_state.analytics['queries']}"
         )
         record_feedback(feedback == "Yes")
+
+with tab_aviation:
+    st.title("Aviation Accident RAG Chat")
+    
+    # Create a layout with 2 columns
+    col1, col2 = st.columns([2, 1])  # Wider for input, narrow for model select
+    with col1:
+        session_id_aviation = st.text_input("Enter Session ID (e.g., user123):", value="default_session_aviation")
+
+    # Right-hand smaller model selector
+    with col2:
+        model_choice_aviation = st.selectbox(
+            label="",
+            options=[
+                "GPT-4o",
+                "GPT-4-turbo",
+                "GPT-4",
+                "Deepseek-R1-Distill-Llama-70b",
+                "Gemma2-9b-It",
+                "Mistral-Saba-24b"
+            ],
+            index=0
+        )
+
+    # Map selection to backend model name
+    model_map_aviation = {
+        "GPT-4o": "gpt-4o",
+        "GPT-4-turbo": "gpt-4-turbo",
+        "GPT-4": "gpt-4",
+        "Deepseek-R1-Distill-Llama-70b": "Deepseek-R1-Distill-Llama-70b",
+        "Gemma2-9b-It": "Gemma2-9b-It",
+        "Mistral-Saba-24b": "Mistral-Saba-24b"
+    }
+    selected_model_aviation = model_map_aviation[model_choice_aviation]
+
+    aviation_index = create_aviation_index()
+    # For Aviation Accident RAG tab, use the prebuilt FAISS index
+    retriever_avaition = aviation_index.as_retriever(search_kwargs={"k": 5})
+
+    llm = get_llm(selected_model_aviation)
+    initialize_analytics()
+    session_history = get_session_history(session_id_aviation, "aviation")
+
+    if retriever_avaition:
+        contextualize_q_prompt = get_contextualize_prompt_aviation()
+        history_aware_retriever_aviation = create_history_aware_retriever(llm, retriever_avaition, contextualize_q_prompt)
+        qa_prompt = get_qa_prompt()
+        question_answer_chain = create_stuff_documents_chain(llm, qa_prompt)
+        rag_chain = create_retrieval_chain(history_aware_retriever_aviation, question_answer_chain)
+        conversational_rag_chain = RunnableWithMessageHistory(
+            rag_chain,
+            get_session_history,
+            input_messages_key="input",
+            history_messages_key="chat_history",
+            output_messages_key="answer"
+        )
+
+        
+    user_input_aviation = st.text_input("What question do you have about aviation accidents?")
+    if user_input_aviation:
+        start_time = time.time()
+
+        if retriever_avaition:
+
+            retrieved_docs = history_aware_retriever_aviation.invoke(
+                {"chat_history": session_history.messages, "input": user_input_aviation}
+            )
+
+            answer = question_answer_chain.invoke(
+                {"context": retrieved_docs, "chat_history":session_history.messages, "input": user_input_aviation}
+            )
+
+            end_time = time.time()
+            update_analytics(start_time, end_time)
+
+            st.markdown("### Answer (From Documents):")
+            st.write(answer)
+
+            ## Sources
+            st.markdown("#### Sources Used: ")
+            for i, doc in enumerate(retrieved_docs):
+                with st.expander(f"Source {i+1}"):
+                    meta_lines = []
+                    if "source" in doc.metadata:
+                        meta_lines.append(f"**File:** {doc.metadata['source']}")
+                    if "page" in doc.metadata:
+                        meta_lines.append(f"**Page:** {doc.metadata['page']}")
+                    if meta_lines:
+                        st.markdown("  \n".join(meta_lines))
+                    st.write(doc.page_content)
+
+            session_history.add_user_message(user_input_aviation)
+            session_history.add_ai_message(answer)
+
+        else:
+            # Fallback: Chat History Only
+            simple_prompt = get_simple_prompt()
+            history_only_chain = simple_prompt | llm | StrOutputParser()
+
+            response = history_only_chain.invoke(
+                {"input": user_input_aviation, "chat_history": session_history.messages}
+            )
+
+            # Update session history manually
+            session_history.add_user_message(user_input_aviation)
+            session_history.add_ai_message(response)
+            end_time = time.time()
+            update_analytics(start_time, end_time)
+            st.markdown("### Answer :")
+            st.write(response)
+        
+        # Feedback for accuracy
+        feedback = st.radio(
+            "Was this answer correct?",
+            ["Yes", "No"],
+            key=f"feedback_{st.session_state.analytics['queries']}"
+        )
+        record_feedback(feedback == "Yes")
+
+
+
 
 with tab_analytics:
     render_dashboard()
